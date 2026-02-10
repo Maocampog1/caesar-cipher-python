@@ -9,54 +9,453 @@
   <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 
   <style>
-    body { font-family: system-ui, Arial; max-width: 900px; margin: 32px auto; padding: 0 16px; }
-    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 12px 0; }
-    label { display:block; margin: 10px 0 6px; font-weight: 600; }
-    textarea, input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; }
-    textarea { min-height: 130px; resize: vertical; }
-    .row { display:flex; gap: 10px; flex-wrap: wrap; }
-    .row > * { flex: 1; min-width: 220px; }
-    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #111; background: #111; color: #fff; cursor:pointer; }
-    button.secondary { background: #fff; color: #111; }
-    button.ghost { background: #f3f3f3; color:#111; border-color:#ccc; }
-    .hint { color:#555; font-size: 0.95rem; }
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1223;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.14);
+      --text:#eaf0ff;
+      --muted: rgba(234,240,255,.7);
+      --muted2: rgba(234,240,255,.55);
+      --accent:#7c5cff;
+      --accent2:#22d3ee;
+      --danger:#ff4d6d;
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(900px 500px at 15% 10%, rgba(124,92,255,.25), transparent 60%),
+        radial-gradient(900px 500px at 85% 20%, rgba(34,211,238,.18), transparent 60%),
+        radial-gradient(900px 500px at 50% 95%, rgba(124,92,255,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+      padding: 34px 16px 60px;
+      position: relative;
+      overflow-x:hidden;
+    }
+
+    /* grid “hacker” */
+    body::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(to right, rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at center, rgba(0,0,0,.75), transparent 70%);
+      pointer-events:none;
+      opacity:.35;
+    }
+
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      position:relative;
+      z-index:1;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom: 18px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .title{
+      font-size: clamp(22px, 3.2vw, 34px);
+      font-weight: 800;
+      letter-spacing:.2px;
+      margin:0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 13px;
+      white-space:nowrap;
+    }
+
+    .hint{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.45;
+      max-width: 780px;
+      font-size: 14.5px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:16px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+      header{ flex-direction:column; align-items:flex-start; }
+      .badge{ width: fit-content; }
+    }
+
+    .card{
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,.03));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .card .head{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      background: rgba(255,255,255,.02);
+    }
+
+    .card .head h2{
+      margin:0;
+      font-size: 15px;
+      letter-spacing:.4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .dot{
+      width:10px; height:10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, var(--accent));
+      box-shadow: 0 0 0 4px rgba(124,92,255,.15);
+    }
+
+    .card .body{
+      padding: 16px;
+    }
+
+    label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin: 10px 0 8px;
+      font-weight: 700;
+      color: rgba(234,240,255,.9);
+      font-size: 13.5px;
+      letter-spacing:.2px;
+    }
+
+    .sub{
+      font-weight: 600;
+      color: var(--muted2);
+      font-size: 12.5px;
+    }
+
+    textarea, input{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(4,8,16,.55);
+      color: var(--text);
+      padding: 12px 12px;
+      outline: none;
+      transition: border .2s, box-shadow .2s, transform .05s;
+    }
+
+    textarea{
+      min-height: 170px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    textarea:focus, input:focus{
+      border-color: rgba(124,92,255,.55);
+      box-shadow: 0 0 0 4px rgba(124,92,255,.18);
+    }
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+
+    .col{
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .keywrap{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .keywrap input{
+      max-width: 220px;
+    }
+
+    .helper{
+      margin-top: 8px;
+      font-size: 12.5px;
+      color: var(--muted2);
+    }
+
+    .btns{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    button{
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-weight: 800;
+      letter-spacing:.2px;
+      cursor:pointer;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transition: transform .08s, filter .2s, background .2s, border .2s, box-shadow .2s;
+      user-select:none;
+    }
+
+    button:hover{
+      filter: brightness(1.08);
+      border-color: rgba(255,255,255,.24);
+    }
+
+    button:active{
+      transform: translateY(1px);
+    }
+
+    .primary{
+      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(34,211,238,.55));
+      border-color: rgba(124,92,255,.55);
+      box-shadow: 0 10px 30px rgba(124,92,255,.25);
+    }
+
+    .secondary{
+      background: rgba(34,211,238,.10);
+      border-color: rgba(34,211,238,.35);
+    }
+
+    .danger{
+      background: rgba(255,77,109,.12);
+      border-color: rgba(255,77,109,.35);
+      color: rgba(255,210,220,.95);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,.18);
+      color: var(--muted);
+      background: rgba(255,255,255,.04);
+      font-size: 13px;
+    }
+
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      color: rgba(234,240,255,.72);
+    }
+
+    footer{
+      margin-top: 14px;
+      color: var(--muted2);
+      font-size: 12.5px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap: wrap;
+    }
+
+    .icon{
+      width: 18px;
+      height: 18px;
+      display:inline-block;
+    }
   </style>
 </head>
 
 <body>
-  <h1>Cifrado César (Python en GitHub Pages)</h1>
-  <p class="hint">
-    Escribe el texto, elige la llave numérica y presiona Cifrar o Descifrar.
-    (Números y símbolos no cambian; las letras sí).
-  </p>
-
-  <div class="card">
-    <label for="inp_text">Input (texto)</label>
-    <textarea id="inp_text" placeholder="Ej: Hola mundo..."></textarea>
-
-    <div class="row">
-      <div>
-        <label for="inp_key">Llave (entero)</label>
-        <input id="inp_key" type="number" value="3" />
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1 class="title">
+          <!-- candado -->
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M6 10h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" />
+            <path d="M12 14v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Cifrado César
+        </h1>
+        <p class="hint">
+          Ingresa un texto y una <b>llave numérica</b>. Presiona <b>Cifrar</b> o <b>Descifrar</b>.
+          Se conservan mayúsculas/minúsculas y símbolos.
+        </p>
       </div>
-      <div>
-        <label>&nbsp;</label>
-        <div class="row">
-          <button id="btn_encrypt">Cifrar</button>
-          <button id="btn_decrypt" class="secondary">Descifrar</button>
-          <button id="btn_clear" class="ghost">Limpiar</button>
+
+      <div class="badge">
+        <span class="dot"></span>
+        Python en el navegador · GitHub Pages
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Panel principal -->
+      <section class="card">
+        <div class="head">
+          <h2><span class="dot"></span> Operación</h2>
+          <span class="pill">
+            <span class="mono">key = key % 26</span>
+          </span>
         </div>
-      </div>
+
+        <div class="body">
+          <label for="inp_text">
+            Input (texto)
+            <span class="sub">mensaje original o cifrado</span>
+          </label>
+          <textarea id="inp_text" placeholder="Ej: Hola mundo..."></textarea>
+
+          <div class="row" style="margin-top:10px;">
+            <div class="col">
+              <label for="inp_key">
+                Llave (entero)
+                <span class="sub">puede ser negativa</span>
+              </label>
+              <div class="keywrap">
+                <input id="inp_key" type="number" value="3" />
+                <span class="pill" title="Sugerencia: usa valores 0–25">
+                  <span class="mono">0–25</span>
+                </span>
+              </div>
+              <div class="helper">Tip: si pones 26, queda igual. Si pones -3, es como descifrar con 3.</div>
+            </div>
+
+            <div class="col">
+              <label>&nbsp;</label>
+              <div class="btns">
+                <button id="btn_encrypt" class="primary" title="Cifrar con la llave">
+                  <!-- rayo -->
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M13 2 3 14h7l-1 8 12-14h-7l-1-6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  </svg>
+                  Cifrar
+                </button>
+
+                <button id="btn_decrypt" class="secondary" title="Descifrar con la llave">
+                  <!-- flecha -->
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M20 12H7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M11 8 7 12l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Descifrar
+                </button>
+
+                <button id="btn_clear" class="danger" title="Borrar inputs/outputs">
+                  <!-- basura -->
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 7h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M10 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 7l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M9 7V4h6v3" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  </svg>
+                  Limpiar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <label for="out_text" style="margin-top:16px;">
+            Output (resultado)
+            <span class="sub">solo lectura</span>
+          </label>
+          <textarea id="out_text" readonly placeholder="Aquí aparece el resultado..."></textarea>
+        </div>
+      </section>
+
+      <!-- Panel lateral (info bonita) -->
+      <aside class="card">
+        <div class="head">
+          <h2><span class="dot"></span> Guía rápida</h2>
+        </div>
+        <div class="body">
+          <div class="pill" style="width:100%; justify-content:space-between;">
+            <span>Ejemplo</span>
+            <span class="mono">"ABC", key=3 → "DEF"</span>
+          </div>
+
+          <div style="height:10px"></div>
+
+          <div class="pill" style="width:100%; justify-content:space-between;">
+            <span>Wrap</span>
+            <span class="mono">"xyz", key=2 → "zab"</span>
+          </div>
+
+          <div style="height:10px"></div>
+
+          <div class="pill" style="width:100%; justify-content:space-between;">
+            <span>Descifrar</span>
+            <span class="mono">encrypt(text, -key)</span>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <p class="hint" style="margin:0;">
+            Esta interfaz corre en el navegador con PyScript, así que se despliega como sitio estático en GitHub Pages.
+          </p>
+        </div>
+      </aside>
     </div>
 
-    <label for="out_text">Output (resultado)</label>
-    <textarea id="out_text" readonly placeholder="Aquí aparece el resultado..."></textarea>
+    <footer>
+      <span>Repo: <span class="mono">caesar-cipher-python</span></span>
+      <span class="mono">César Cipher · Python</span>
+    </footer>
+
+    <py-config>
+      packages = []
+    </py-config>
+
+    <py-script src="app.py"></py-script>
   </div>
-
-  <py-config>
-    packages = []
-  </py-config>
-
-  <py-script src="app.py"></py-script>
 </body>
 </html>
