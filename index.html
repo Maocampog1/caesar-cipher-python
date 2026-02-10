@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cifrado César (Python)</title>
+
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+  <style>
+    body { font-family: system-ui, Arial; max-width: 900px; margin: 32px auto; padding: 0 16px; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 12px 0; }
+    label { display:block; margin: 10px 0 6px; font-weight: 600; }
+    textarea, input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; }
+    textarea { min-height: 120px; resize: vertical; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; cursor:pointer; }
+    button.secondary { background: #fff; color: #111; }
+    .row { display:flex; gap: 10px; flex-wrap: wrap; }
+    .row > * { flex: 1; min-width: 220px; }
+    pre { background:#f6f6f6; padding: 12px; border-radius: 10px; overflow:auto; }
+    .hint { color:#555; font-size: 0.95rem; }
+  </style>
+</head>
+
+<body>
+  <h1>Cifrado César (hecho en Python, desplegable en GitHub Pages)</h1>
+  <p class="hint">Puedes cifrar/descifrar eligiendo la llave numérica. Mantiene mayúsculas/minúsculas y deja símbolos igual.</p>
+
+  <div class="card">
+    <label for="txt">Texto</label>
+    <textarea id="txt" placeholder="Escribe tu mensaje..."></textarea>
+
+    <div class="row">
+      <div>
+        <label for="key">Llave numérica</label>
+        <input id="key" type="number" value="3" />
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <div class="row">
+          <button id="btn_encrypt">Cifrar</button>
+          <button id="btn_decrypt" class="secondary">Descifrar</button>
+        </div>
+      </div>
+    </div>
+
+    <label for="out">Resultado</label>
+    <textarea id="out" readonly></textarea>
+  </div>
+
+  <div class="card">
+    <h3>Ejemplos rápidos (para tus 5 pruebas)</h3>
+    <pre id="examples"></pre>
+  </div>
+
+  <py-config>
+    packages = []
+  </py-config>
+
+  <py-script src="app.py"></py-script>
+</body>
+</html>
