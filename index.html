@@ -13,45 +13,44 @@
     .card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin: 12px 0; }
     label { display:block; margin: 10px 0 6px; font-weight: 600; }
     textarea, input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; }
-    textarea { min-height: 120px; resize: vertical; }
-    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; cursor:pointer; }
-    button.secondary { background: #fff; color: #111; }
+    textarea { min-height: 130px; resize: vertical; }
     .row { display:flex; gap: 10px; flex-wrap: wrap; }
     .row > * { flex: 1; min-width: 220px; }
-    pre { background:#f6f6f6; padding: 12px; border-radius: 10px; overflow:auto; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #111; background: #111; color: #fff; cursor:pointer; }
+    button.secondary { background: #fff; color: #111; }
+    button.ghost { background: #f3f3f3; color:#111; border-color:#ccc; }
     .hint { color:#555; font-size: 0.95rem; }
   </style>
 </head>
 
 <body>
-  <h1>Cifrado César (hecho en Python, desplegable en GitHub Pages)</h1>
-  <p class="hint">Puedes cifrar/descifrar eligiendo la llave numérica. Mantiene mayúsculas/minúsculas y deja símbolos igual.</p>
+  <h1>Cifrado César (Python en GitHub Pages)</h1>
+  <p class="hint">
+    Escribe el texto, elige la llave numérica y presiona Cifrar o Descifrar.
+    (Números y símbolos no cambian; las letras sí).
+  </p>
 
   <div class="card">
-    <label for="txt">Texto</label>
-    <textarea id="txt" placeholder="Escribe tu mensaje..."></textarea>
+    <label for="inp_text">Input (texto)</label>
+    <textarea id="inp_text" placeholder="Ej: Hola mundo..."></textarea>
 
     <div class="row">
       <div>
-        <label for="key">Llave numérica</label>
-        <input id="key" type="number" value="3" />
+        <label for="inp_key">Llave (entero)</label>
+        <input id="inp_key" type="number" value="3" />
       </div>
       <div>
         <label>&nbsp;</label>
         <div class="row">
           <button id="btn_encrypt">Cifrar</button>
           <button id="btn_decrypt" class="secondary">Descifrar</button>
+          <button id="btn_clear" class="ghost">Limpiar</button>
         </div>
       </div>
     </div>
 
-    <label for="out">Resultado</label>
-    <textarea id="out" readonly></textarea>
-  </div>
-
-  <div class="card">
-    <h3>Ejemplos rápidos (para tus 5 pruebas)</h3>
-    <pre id="examples"></pre>
+    <label for="out_text">Output (resultado)</label>
+    <textarea id="out_text" readonly placeholder="Aquí aparece el resultado..."></textarea>
   </div>
 
   <py-config>
